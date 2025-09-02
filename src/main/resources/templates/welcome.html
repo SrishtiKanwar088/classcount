@@ -21,7 +21,6 @@
             position: relative;
         }
         .main-container {
-            /* This centers the entire content block */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -34,7 +33,7 @@
             background: rgba(255, 255, 255, 0.12);
             border-radius: 12px;
             backdrop-filter: blur(8px);
-            padding: 30px 30px 24px 30px;
+            padding: 30px;
             max-width: 800px;
             text-align: center;
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
@@ -47,13 +46,13 @@
             font-size: 36px;
             font-weight: bold;
             text-shadow: 0 1px 4px rgba(2, 48, 71, 0.3);
-            color: #FFF; /* Reverted to white */
+            color: #FFF;
             margin-bottom: 0;
             padding-bottom: 0;
         }
         .top-bar {
             width: 100%;
-            max-width: 800px; /* Match welcome-box width */
+            max-width: 800px;
             margin-bottom: 24px;
         }
         .intro-text {
@@ -160,8 +159,7 @@
                 <select id="year-select" class="form-select form-select-lg">
                     <option th:each="classroom : ${classrooms}"
                             th:value="${classroom.year}"
-                            th:text="${classroom.year}"
-                            th:selected="${classroom.year == '3rd Year'}">
+                            th:text="${classroom.year}">
                     </option>
                 </select>
             </div>
@@ -188,8 +186,18 @@
     document.addEventListener('DOMContentLoaded', function() {
         const yearSelect = document.getElementById('year-select');
 
+        // Set the selected year on page load from localStorage or default to '3rd Year'
+        const lastSelectedYear = localStorage.getItem('selectedYear');
+        if (lastSelectedYear) {
+            yearSelect.value = lastSelectedYear;
+        } else {
+            yearSelect.value = '3rd Year'; // Fallback to a default if nothing is saved
+        }
+
         function updateButtonLinks() {
             const selectedYear = yearSelect.value;
+            // Save the selected year to localStorage
+            localStorage.setItem('selectedYear', selectedYear);
             const encodedYear = encodeURIComponent(selectedYear);
             document.getElementById('manage-students-btn').onclick = () => window.location.href = `/students/${encodedYear}`;
             document.getElementById('manage-subjects-btn').onclick = () => window.location.href = `/subjects/${encodedYear}`;
@@ -198,7 +206,7 @@
         }
 
         yearSelect.addEventListener('change', updateButtonLinks);
-        updateButtonLinks();
+        updateButtonLinks(); // Initialize links on page load
     });
 </script>
 </body>
