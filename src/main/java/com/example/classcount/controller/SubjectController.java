@@ -63,8 +63,17 @@ public class SubjectController {
     @PostMapping("/update/{id}")
     public String updateSubject(@PathVariable("id") Long id, @ModelAttribute("subject") Subject subject, RedirectAttributes redirectAttributes) {
         subject.setId(id);
+
+        // This is the crucial part that was causing the error.
+        // We need to re-attach the existing classroom before saving.
+        Classroom existingClassroom = classroomRepository.findById(subject.getClassroom().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid classroom ID."));
+        subject.setClassroom(existingClassroom);
+
         subjectRepository.save(subject);
         redirectAttributes.addFlashAttribute("successMessage", "Subject updated successfully!");
+
+        // Correct redirect back to the subject list for the correct year
         return "redirect:/subjects/" + subject.getClassroom().getYear();
     }
 

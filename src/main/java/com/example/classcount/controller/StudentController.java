@@ -33,11 +33,10 @@ public class StudentController {
         return "student-list"; // Renders src/main/resources/templates/student-list.html
     }
 
-    // Handle the form submission for adding or updating a student
+    // Handle the form submission for adding a student
     @PostMapping("/add")
     public String addStudent(@ModelAttribute("newStudent") Student student, RedirectAttributes redirectAttributes) {
         try {
-            // Find the classroom by year
             Classroom classroom = classroomRepository.findByYear(student.getClassroom().getYear())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid year provided."));
             student.setClassroom(classroom);
@@ -63,9 +62,18 @@ public class StudentController {
     @PostMapping("/update/{id}")
     public String updateStudent(@PathVariable("id") Long id, @ModelAttribute("student") Student student, RedirectAttributes redirectAttributes) {
         student.setId(id);
+
+        // This is the crucial part that was causing the error.
+        // We need to re-attach the existing classroom before saving.
+        Classroom existingClassroom = classroomRepository.findById(student.getClassroom().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid classroom ID."));
+        student.setClassroom(existingClassroom);
+
         studentRepository.save(student);
         redirectAttributes.addFlashAttribute("successMessage", "Student updated successfully!");
-        return "redirect:/students/" + student.getClassroom().getYear();
+
+        // Correct redirect back to the student list for the correct year
+        return "redirect:/students/" + existingClassroom.getYear();
     }
 
     // Handle student deletion
