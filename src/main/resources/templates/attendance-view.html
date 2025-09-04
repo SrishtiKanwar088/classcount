@@ -8,73 +8,128 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #8ECAE6 0%, #023047 100%);
-            font-family: 'Poppins', Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             color: #fff;
-            padding: 50px;
+            background-color: #15293d;
+            overflow: hidden;
             position: relative;
-            z-index: 1;
         }
-        .container-fluid {
-            background: rgba(255, 255, 255, 0.12);
-            border-radius: 12px;
+
+        .container {
+            z-index: 10;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
             backdrop-filter: blur(8px);
             padding: 30px;
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            width: 100%;
+            max-width: 1000px;
         }
-        h1 { color: #fff; text-shadow: 0 1px 4px rgba(2, 48, 71, 0.3); }
-        .table {
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+
+        .app-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #ff8c00, #ff0080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s infinite alternate;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
             color: #fff;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
         }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(8px);
+        }
+
+        .table th, .table td {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
         .table-striped > tbody > tr:nth-of-type(odd) > * {
             background-color: rgba(255, 255, 255, 0.05);
         }
-        .table-hover > tbody > tr:hover > * {
+
+        .table-hover > tbody > tr > * {
             background-color: rgba(255, 255, 255, 0.1);
         }
-        .btn-yellow {
-            background: #FFB703;
-            color: #023047;
+
+        .btn-submit {
+            background-color: #ff8c00;
             border: none;
-            font-weight: bold;
-            font-size: 16px;
-            border-radius: 6px;
-            padding: 10px 30px;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 12px rgba(255, 179, 0, 0.18);
-        }
-        .btn-yellow:hover {
-            background: #FB8500;
-            transform: translateY(-2px) scale(1.05);
-        }
-        .back-btn {
-            background: #6c757d;
-            border-color: #6c757d;
             color: #fff;
+            font-weight: bold;
+            border-radius: 8px;
+            padding: 12px 0;
+            transition: all 0.3s ease;
         }
-        .back-btn:hover { background: #5a6268; }
+        .btn-submit:hover {
+            background-color: #ff0080;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 0, 128, 0.4);
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ff8c00, 0 0 20px #ff0080; }
+            to { text-shadow: 0 0 20px #ff0080, 0 0 30px #ff8c00; }
+        }
     </style>
 </head>
 <body>
-<div class="container-fluid">
-    <h1 th:text="${currentYear} + ' Attendance Report'" class="mb-4 text-center"></h1>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <a th:href="@{/welcome}" class="btn back-btn">Back to Dashboard</a>
-        <a th:href="@{/attendance/view/export/{year}(year=${currentYear})}" class="btn btn-yellow">Download Excel Report</a>
-    </div>
-    <div class="card bg-transparent border-0">
-        <div class="card-body bg-transparent">
+<div class="container d-flex flex-column align-items-center justify-content-center">
+    <div class="dashboard-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="app-title" style="font-size: 2rem;">Attendance Report</h1>
+            <a th:href="@{/}" class="btn back-btn">Back to Dashboard</a>
+        </div>
+
+        <div class="table-container">
+            <h4 th:text="${currentYear} + ' Attendance Report'" class="mb-4 text-center" style="color: #ff8c00;"></h4>
+            <div class="d-flex justify-content-end mb-3">
+                <a th:href="@{/attendance/view/export/{year}(year=${currentYear})}" class="btn btn-submit">Download Excel Report</a>
+            </div>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>
-                        <th style="color: #FFB703;">Student Name</th>
-                        <th th:each="subject : ${subjects}" th:text="${subject.name}" style="color: #FFB703;"></th>
-                        <th style="color: #FFB703;">Overall Attendance %</th>
+                        <th style="color: #ff8c00;">Student Name</th>
+                        <th th:each="subject : ${subjects}" th:text="${subject.name}" style="color: #ff8c00;"></th>
+                        <th style="color: #ff8c00;">Overall Attendance %</th>
                     </tr>
                     </thead>
                     <tbody>

@@ -8,92 +8,151 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #8ECAE6 0%, #023047 100%);
-            font-family: 'Poppins', Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             color: #fff;
-            padding: 50px;
+            background-color: #15293d;
+            overflow: hidden;
             position: relative;
-            z-index: 1;
         }
+
         .container {
-            background: rgba(255, 255, 255, 0.12);
-            border-radius: 12px;
+            z-index: 10;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
             backdrop-filter: blur(8px);
             padding: 30px;
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            width: 100%;
+            max-width: 800px;
         }
-        h4 { color: #fff; text-shadow: 0 1px 4px rgba(2, 48, 71, 0.3); }
+
+        .app-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #ff8c00, #ff0080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s infinite alternate;
+            margin-bottom: 2rem;
+        }
+
+        h4 {
+            color: #fff;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
         .list-group-item {
             background-color: rgba(255, 255, 255, 0.05);
             color: #fff;
             border-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
+
         .form-check-input:checked {
-            background-color: #FFB703;
-            border-color: #FFB703;
+            background-color: #ff8c00;
+            border-color: #ff8c00;
         }
+
         .form-check-input:focus {
-            box-shadow: 0 0 0 0.25rem rgba(255, 183, 3, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(255, 140, 0, 0.25);
         }
-        .btn-yellow {
-            background: #FFB703;
-            color: #023047;
+
+        .btn-submit {
+            background-color: #ff8c00;
             border: none;
+            color: #fff;
             font-weight: bold;
-            font-size: 16px;
-            border-radius: 6px;
-            transition: all 0.25s ease;
+            border-radius: 8px;
+            padding: 12px 0;
+            transition: all 0.3s ease;
         }
-        .btn-yellow:hover {
-            background: #FB8500;
-            transform: translateY(-2px) scale(1.05);
+
+        .btn-submit:hover {
+            background-color: #ff0080;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 0, 128, 0.4);
         }
+
         .btn-secondary {
-            background: #6c757d;
-            border-color: #6c757d;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            border-radius: 8px;
             color: #fff;
         }
-        .btn-secondary:hover { background: #5a6268; }
-        .alert { border-radius: 6px; }
+
+        .alert-danger { background-color: rgba(220, 53, 69, 0.8); border-color: rgba(220, 53, 69, 0.9); }
+        .alert-warning { background-color: rgba(255, 193, 7, 0.8); border-color: rgba(255, 193, 7, 0.9); }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ff8c00, 0 0 20px #ff0080; }
+            to { text-shadow: 0 0 20px #ff0080, 0 0 30px #ff8c00; }
+        }
     </style>
 </head>
 <body>
-<div class="container mt-5">
-    <div th:if="${successMessage}" class="alert alert-success" role="alert">
-        <span th:text="${successMessage}"></span>
-    </div>
-    <div th:if="${hasExistingAttendance}" class="alert alert-warning" role="alert">
-        Attendance for this subject has already been marked for today. Submitting again will overwrite it.
-    </div>
-
-    <div class="card p-4 bg-transparent">
-        <div class="card-header bg-transparent border-0 text-center">
-            <h4 th:text="'Mark Attendance for ' + ${subject.name} + ' on ' + ${todayDate}"></h4>
+<div class="container d-flex flex-column align-items-center justify-content-center">
+    <div class="dashboard-card">
+        <h4 th:text="'Mark Attendance for ' + ${subject.name} + ' on ' + ${todayDate}"></h4>
+        <p class="text-center mb-4 text-white-50" th:if="${hasExistingAttendance}">
+            Attendance for this subject has already been marked for today. Submitting again will overwrite it.
+        </p>
+        <div th:if="${successMessage}" class="alert alert-success" role="alert">
+            <span th:text="${successMessage}"></span>
         </div>
-        <div class="card-body">
-            <form th:action="@{/attendance/save}" method="post">
-                <input type="hidden" name="subjectId" th:value="${subject.id}">
-                <input type="hidden" name="year" th:value="${currentYear}">
-
-                <ul class="list-group mb-4">
-                    <li th:each="student : ${students}" class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <span th:text="${student.rollNumber} + ' - ' + ${student.name}" style="color: #ffffff;"></span>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" th:id="'present-' + ${student.id}" name="presentStudentIds" th:value="${student.id}" checked>
-                            <label class="form-check-label" th:for="'present-' + ${student.id}">Present</label>
-                        </div>
-                        <input type="hidden" name="studentIds" th:value="${student.id}">
-                    </li>
-                </ul>
-                <button type="submit" class="btn btn-yellow w-100">Save Attendance</button>
-            </form>
+        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+            <span th:text="${errorMessage}"></span>
         </div>
-    </div>
-    <div class="mt-4 text-center">
-        <a th:href="@{/attendance/take/{year}(year=${currentYear})}" class="btn btn-secondary">Back to Subject Selection</a>
+
+        <form th:action="@{/attendance/save}" method="post">
+            <input type="hidden" name="subjectId" th:value="${subject.id}">
+            <input type="hidden" name="year" th:value="${currentYear}">
+
+            <ul class="list-group mb-4">
+                <li th:each="student : ${students}" class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <span th:text="${student.rollNumber} + ' - ' + ${student.name}" style="color: #fff;"></span>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" th:id="'present-' + ${student.id}" name="presentStudentIds" th:value="${student.id}" checked>
+                        <label class="form-check-label" th:for="'present-' + ${student.id}">Present</label>
+                    </div>
+                    <input type="hidden" name="studentIds" th:value="${student.id}">
+                </li>
+            </ul>
+            <button type="submit" class="btn btn-submit w-100">Save Attendance</button>
+        </form>
+        <div class="mt-4 text-center">
+            <a th:href="@{/attendance/take/{year}(year=${currentYear})}" class="btn btn-secondary">Back to Subject Selection</a>
+        </div>
     </div>
 </div>
 </body>
